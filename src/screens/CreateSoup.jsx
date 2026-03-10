@@ -16,6 +16,9 @@ export default function CreateSoup({ user }) {
   const [previewSoup, setPreviewSoup] = useState(null);
   const [showAnswers, setShowAnswers] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const cleanWords = words.filter(w => w.trim().length > 1);
 
   // Lowest safe dynamic grid size bounds purely based on letter count and longest word. Minimum 5.
   const longestWordLen = cleanWords.length > 0 ? Math.max(...cleanWords.map(w => w.length)) : 0;
@@ -99,7 +102,8 @@ export default function CreateSoup({ user }) {
     const existing = JSON.parse(localStorage.getItem(`soups_${user}`) || '[]');
     existing.push(previewSoup);
     localStorage.setItem(`soups_${user}`, JSON.stringify(existing));
-    navigate('/');
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2000);
   };
 
   const getShareLink = () => {
@@ -210,7 +214,7 @@ export default function CreateSoup({ user }) {
         </div>
 
         <div>
-          <label style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.8, marginBottom: '0.5rem', display: 'block', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.8, marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>Words ({cleanWords.length}/12)</span>
           </label>
           
@@ -318,8 +322,8 @@ export default function CreateSoup({ user }) {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginTop: '0.5rem' }}>
-             <button className="btn-secondary" onClick={handleSave} style={{ fontSize: '0.9rem', padding: '0.8rem' }}>
-                 <Save size={18} /> Save
+             <button className="btn-secondary" onClick={handleSave} disabled={isSaved} style={{ fontSize: '0.9rem', padding: '0.8rem', opacity: isSaved ? 0.7 : 1 }}>
+                 <Save size={18} /> {isSaved ? 'Saved!' : 'Save'}
              </button>
              <button className="btn-primary" onClick={handleShare} style={{ fontSize: '0.9rem', padding: '0.8rem' }}>
                  <Share2 size={18} /> {copied ? 'Copied!' : 'Share'}

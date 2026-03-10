@@ -155,7 +155,8 @@ export function generateRandomEnglishWords() {
         { word: "SECRET", meaning: "Not known or seen or not meant to be known or seen by others." }
     ];
 
-    // shuffle and take exactly 6 words for 10x10 grids
-    const shuffled = [...dictionary].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 6);
+    // shuffle and take exactly 1 word of length <= 5 for testing
+    const validWords = dictionary.filter(w => w.word.length <= 5);
+    const shuffled = [...validWords].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 1);
 }

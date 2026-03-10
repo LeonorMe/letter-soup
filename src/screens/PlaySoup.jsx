@@ -13,6 +13,8 @@ export default function PlaySoup() {
   // Prevent multiple saves if React double-renders the win state
   const hasSavedWin = useRef(false);
 
+  const [copied, setCopied] = useState(false);
+
   // For touch drag implementation
   const [isDragging, setIsDragging] = useState(false);
 
@@ -48,6 +50,16 @@ export default function PlaySoup() {
                  // Match found!
                  setFoundWords(prev => [...prev, w]);
                  setSelection([]); // Clear selection
+                 
+                 // --- Track individual word found for Points ---
+                 if (soupData.title === 'Learn English Vocabulary') {
+                     const currentUser = localStorage.getItem('currentUser');
+                     if (currentUser) {
+                         const key = `vocab_points_${currentUser}`;
+                         const currentPoints = parseInt(localStorage.getItem(key) || '0', 10);
+                         localStorage.setItem(key, (currentPoints + 1).toString());
+                     }
+                 }
                  
                  // If that was the last word, we win!
                  break;
@@ -86,7 +98,32 @@ export default function PlaySoup() {
     );
   }
 
+  const handleShare = async () => {
+      if (!soupData) return;
+      const encoded = encodeURIComponent(JSON.stringify(soupData));
+      const base = window.location.href.split('#')[0];
+      const link = `${base}#/play?data=${encoded}`;
+      
+      try {
+          if (navigator.share) {
+              await navigator.share({
+                  title: soupData.title,
+                  text: 'I made a letter soup for you! 🍲',
+                  url: link
+              });
+          } else {
+              await navigator.clipboard.writeText(link);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+          }
+      } catch (err) {
+          console.error("Share failed", err);
+      }
+  };
+
   // --- Interaction Logic (Click / Drag to select) ---
+
+  const getCellKey = (r, c) => `${r}-${c}`;
 
   const toggleCell = (r, c) => {
     if (isWin) return;
@@ -142,8 +179,13 @@ export default function PlaySoup() {
         <button onClick={() => navigate('/')} style={{ color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
           <ArrowLeft size={20} /> Home
         </button>
-        <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-          {foundWords.length} / {soupData.words.length} found
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button onClick={handleShare} style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.9rem' }}>
+                {copied ? <span style={{ fontSize: '0.8rem' }}>Copied!</span> : <><Share2 size={16} /> Share</>}
+            </button>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              {foundWords.length} / {soupData.words.length} found
+            </div>
         </div>
       </div>
 
