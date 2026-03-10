@@ -289,11 +289,7 @@ export function generateSoup(inputWords, manualSize = null) {
  */
 export function generateVocabularyWords(langCode = 'en') {
   const pool = VOCABULARY[langCode] || VOCABULARY.en;
-
-  // ── TESTING: 1 word of ≤5 letters for 5×5 grid ────────────────────────────
-  // TODO: Remove filter + change slice(0, 1) to slice(0, 6) for production
-  const short = pool.filter(w => w.word.length <= 5);
-  return [...short].sort(() => Math.random() - 0.5).slice(0, 1);
+  return [...pool].sort(() => Math.random() - 0.5).slice(0, 6);
 }
 
 // ─── Backwards-compatibility alias (used by older references) ─────────────────

@@ -46,8 +46,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
   /** Start a new random vocabulary puzzle in the current language */
   const handlePlayRandom = () => {
     const words = generateVocabularyWords(language);
-    // ⚠️  TESTING: 5×5 grid. Change to generateSoup(words, 10) for production.
-    const { grid, words: placedWords, size } = generateSoup(words, 5);
+    const { grid, words: placedWords, size } = generateSoup(words, 10);
 
     const soupData = {
       title:    t.learnVocab,  // fully translated, e.g. "Aprender Vocabulario 🌍" in Spanish
