@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Award, RefreshCcw } from 'lucide-react';
 
@@ -9,6 +9,9 @@ export default function PlaySoup() {
   const [soupData, setSoupData] = useState(null);
   const [selection, setSelection] = useState([]); // Array of {r, c}
   const [foundWords, setFoundWords] = useState([]); // Array of word objects
+
+  // Prevent multiple saves if React double-renders the win state
+  const hasSavedWin = useRef(false);
 
   // For touch drag implementation
   const [isDragging, setIsDragging] = useState(false);
@@ -52,6 +55,27 @@ export default function PlaySoup() {
          }
      }
   }, [selection, soupData, foundWords]);
+  
+  const isWin = soupData && foundWords.length === soupData.words.length && soupData.words.length > 0;
+
+  // Track wins for vocabulary mode
+  useEffect(() => {
+     if (isWin && !hasSavedWin.current && soupData.title === 'Learn English Vocabulary') {
+         hasSavedWin.current = true;
+         const currentUser = localStorage.getItem('currentUser');
+         if (currentUser) {
+             const key = `vocab_wins_${currentUser}`;
+             const currentWins = parseInt(localStorage.getItem(key) || '0', 10);
+             localStorage.setItem(key, (currentWins + 1).toString());
+         }
+     }
+  }, [isWin, soupData]);
+
+  // Randomize the hints order specifically during gameplay, but keep original order for win screen
+  const randomizedHints = useMemo(() => {
+      if (!soupData || !soupData.words) return [];
+      return [...soupData.words].sort(() => Math.random() - 0.5);
+  }, [soupData]);
 
   if (!soupData) {
     return (
@@ -62,11 +86,7 @@ export default function PlaySoup() {
     );
   }
 
-  const isWin = foundWords.length === soupData.words.length && soupData.words.length > 0;
-
   // --- Interaction Logic (Click / Drag to select) ---
-
-  const getCellKey = (r, c) => `${r}-${c}`;
 
   const toggleCell = (r, c) => {
     if (isWin) return;
@@ -187,10 +207,25 @@ export default function PlaySoup() {
                  <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>All words found successfully.</p>
                  
                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    {/* The original order of words correctly aligns when they win with an animation stagger */}
                     {soupData.words.map((w, idx) => (
-                         <span key={idx} style={{ backgroundColor: w.color, color: '#FFF', padding: '0.3rem 0.8rem', borderRadius: '100px', fontWeight: 700, fontSize: '0.9rem' }}>
-                             {w.word}
-                         </span>
+                         <div key={idx} className={w.meaning ? "tooltip-container" : ""}>
+                             <span 
+                                style={{ 
+                                    backgroundColor: w.color, 
+                                    color: '#FFF', 
+                                    padding: '0.3rem 0.8rem', 
+                                    borderRadius: '100px', 
+                                    fontWeight: 700, 
+                                    fontSize: '0.9rem',
+                                    animation: `popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.1}s both`,
+                                    display: 'inline-block'
+                                }}
+                             >
+                                 {w.word}
+                                 {w.meaning && <div className="tooltip-text">{w.word}: {w.meaning}</div>}
+                             </span>
+                         </div>
                     ))}
                  </div>
 
@@ -204,8 +239,8 @@ export default function PlaySoup() {
                     Words to find:
                 </h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {/* Only show the words in order the creator added them, as requested */}
-                    {soupData.words.map((w, idx) => {
+                    {/* The randomized words for playing gameplay shown here */}
+                    {randomizedHints.map((w, idx) => {
                         const isFound = foundWords.find(fw => fw.word === w.word);
                         return (
                             <span 

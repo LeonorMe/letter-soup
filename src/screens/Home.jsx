@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Dices, LogOut, Trash2 } from 'lucide-react';
+import { PlusCircle, Dices, LogOut, Trash2, Award } from 'lucide-react';
 import { generateRandomEnglishWords, generateSoup } from '../lib/soupGenerator';
 
 export default function Home({ user, onLogout }) {
   const navigate = useNavigate();
   const [savedSoups, setSavedSoups] = useState([]);
+  const [vocabWins, setVocabWins] = useState(0);
 
   useEffect(() => {
     // Load soups from local storage
     const loaded = JSON.parse(localStorage.getItem(`soups_${user}`) || '[]');
     setSavedSoups(loaded);
+    
+    // Load vocab win stats
+    const wins = parseInt(localStorage.getItem(`vocab_wins_${user}`) || '0', 10);
+    setVocabWins(wins);
   }, [user]);
 
   const handlePlayRandom = () => {
@@ -19,7 +24,7 @@ export default function Home({ user, onLogout }) {
     const { grid, words: placedWords, size } = generateSoup(words, 10);
     
     const soupData = {
-      title: "Random English Words",
+      title: "Learn English Vocabulary",
       creator: "The Universe",
       grid,
       words: placedWords,
@@ -49,14 +54,31 @@ export default function Home({ user, onLogout }) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             Welcome, {user}!
           </h1>
           <p style={{ color: 'var(--text-muted)' }}>What's cooking today? 🍲</p>
         </div>
-        <button onClick={onLogout} style={{ color: 'var(--text-muted)' }} title="Logout">
-          <LogOut size={24} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+          {vocabWins > 0 && (
+             <div style={{ 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 gap: '0.4rem', 
+                 backgroundColor: 'rgba(255, 202, 58, 0.1)', 
+                 color: '#eab308', /* Tailwind Yellow-500 equivalent */
+                 padding: '0.4rem 0.8rem',
+                 borderRadius: '100px',
+                 fontWeight: 700,
+                 fontSize: '0.9rem'
+             }} title={`${vocabWins} Vocabulary Soups solved`}>
+                 <Award size={18} /> {vocabWins}
+             </div>
+          )}
+          <button onClick={onLogout} style={{ color: 'var(--text-muted)' }} title="Logout">
+            <LogOut size={24} />
+          </button>
+        </div>
       </div>
 
       {/* Main Actions */}

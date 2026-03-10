@@ -7,8 +7,8 @@
   --card-bg: #ffffff;
   --border-radius: 24px;
   
-  --primary: #06b6d4;
-  --primary-hover: #0891b2;
+  --primary: #0e7490; /* Darker Cyan for accessibility contrast */
+  --primary-hover: #164e63;
   --gray-selection: #cbd5e1;
   --gray-selection-border: #94a3b8;
   
@@ -155,6 +155,41 @@ input[type="text"]:focus {
   border-radius: 8px;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   color: var(--text-main);
+}
+
+/* Tooltips */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  text-align: center;
+  border-radius: 12px;
+  padding: 0.8rem;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--gray-selection-border);
+  pointer-events: none;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Hides default Vite CSS */
