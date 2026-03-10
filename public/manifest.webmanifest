@@ -1,0 +1,18 @@
+{
+  "name": "Letter Soup 🍲",
+  "short_name": "LetterSoup",
+  "description": "A beautiful, multi-language word search game for learning and fun.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0e7490",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait"
+}
