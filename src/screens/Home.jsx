@@ -51,9 +51,8 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
     // ⚠️  TESTING: 5×5 grid. Change to generateSoup(words, 10) for production.
     const { grid, words: placedWords, size } = generateSoup(words, 5);
 
-    const currentLang = LANGUAGES.find(l => l.code === language);
     const soupData = {
-      title:    `${currentLang?.flag || ''} Learn ${currentLang?.label || 'English'} Vocabulary`,
+      title:    t.learnVocab,  // fully translated, e.g. "Aprender Vocabulario 🌍" in Spanish
       creator:  'The Universe',
       language,
       grid,

@@ -179,7 +179,11 @@ export default function CreateSoup({ user, language = 'en' }) {
         <button onClick={() => navigate(-1)} style={{ color: 'var(--text-main)' }}>
           <ArrowLeft size={24} />
         </button>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Create Soup</h1>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t.createSoup}</h1>
+        {/* Show active language flag so user knows which language they're creating in */}
+        <span style={{ marginLeft: 'auto', fontSize: '1.2rem' }} title={currentLang.label}>
+          {currentLang.flag}
+        </span>
       </div>
 
       <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -187,11 +191,11 @@ export default function CreateSoup({ user, language = 'en' }) {
         {/* ── Soup title input ── */}
         <div>
           <label style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.8, marginBottom: '0.3rem', display: 'block' }}>
-            Title
+            {t.titleLabel}
           </label>
           <input
             type="text"
-            placeholder='e.g. "Happy Birthday!" or "You are amazing"'
+            placeholder={t.titlePlaceholder}
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
@@ -200,7 +204,7 @@ export default function CreateSoup({ user, language = 'en' }) {
         {/* ── Grid size control ── */}
         <div>
           <label style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.8, marginBottom: '0.3rem', display: 'block' }}>
-            Grid Size (min {minRequiredSize})
+            {t.gridSizeLabel(minRequiredSize)}
           </label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button
@@ -235,14 +239,14 @@ export default function CreateSoup({ user, language = 'en' }) {
             </button>
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.4rem', textAlign: 'center' }}>
-            Auto-sized to fit words. Max 30×30.
+            {t.gridSizeNote}
           </p>
         </div>
 
         {/* ── Word inputs ── */}
         <div>
           <label style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.8, marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Words ({cleanWords.length}/12)</span>
+            <span>{t.wordsLabel(cleanWords.length)}</span>
           </label>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -276,7 +280,7 @@ export default function CreateSoup({ user, language = 'en' }) {
                   justifyContent: 'center', gap: '0.4rem', marginTop: '0.5rem', width: '100%',
                 }}
               >
-                <Plus size={18} /> Add Word
+                <Plus size={18} /> {t.addWord}
               </button>
             )}
           </div>
@@ -289,7 +293,7 @@ export default function CreateSoup({ user, language = 'en' }) {
           disabled={cleanWords.length === 0}
           style={{ marginTop: '0.5rem', opacity: cleanWords.length === 0 ? 0.5 : 1 }}
         >
-          Generate Preview
+          {t.generatePreview}
         </button>
       </div>
 
@@ -299,13 +303,13 @@ export default function CreateSoup({ user, language = 'en' }) {
 
           {/* Header row */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Preview</h2>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t.generatePreview}</h2>
             <button
               onClick={() => setShowAnswers(!showAnswers)}
               style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}
             >
               {showAnswers ? <EyeOff size={18} /> : <Eye size={18} />}
-              {showAnswers ? 'Hide Answers' : 'Show Answers'}
+              {showAnswers ? t.hideAnswers || 'Hide Answers' : t.showAnswers || 'Show Answers'}
             </button>
           </div>
 
@@ -354,13 +358,13 @@ export default function CreateSoup({ user, language = 'en' }) {
               disabled={isSaved}
               style={{ fontSize: '0.9rem', padding: '0.8rem', opacity: isSaved ? 0.7 : 1 }}
             >
-              <Save size={18} /> {isSaved ? 'Saved!' : 'Save'}
+              <Save size={18} /> {isSaved ? t.saved : t.save}
             </button>
             <button className="btn-primary" onClick={handleShare} style={{ fontSize: '0.9rem', padding: '0.8rem' }}>
-              <Share2 size={18} /> {copied ? 'Copied!' : 'Share'}
+              <Share2 size={18} /> {copied ? t.copied : t.share}
             </button>
             <button className="btn-primary" onClick={handlePlayNow} style={{ gridColumn: 'span 2', fontSize: '1rem', padding: '1rem' }}>
-              <PlayCircle size={20} /> Play Now
+              <PlayCircle size={20} /> {t.play}
             </button>
           </div>
         </div>

@@ -186,7 +186,7 @@ const translations = {
   },
   fr: {
     welcome:        (name) => `Bienvenue, ${name} !`,
-    subtitle:       'Qu'est-ce qu'on cuisine aujourd'hui ? 🍲',
+    subtitle:       `Qu'est-ce qu'on cuisine aujourd'hui ? 🍲`,
     createSoup:     'Créer une Nouvelle Soupe',
     learnVocab:     'Apprendre le Vocabulaire 🌍',
     yourKitchen:    'Ta Cuisine',
@@ -207,7 +207,7 @@ const translations = {
     backToMenu:     'Retour au menu',
     generatePreview:'Aperçu',
     titleLabel:     'Titre',
-    titlePlaceholder: '"Joyeux Anniversaire !" ou "Tu es incroyable"',
+    titlePlaceholder: `"Joyeux Anniversaire !" ou "Tu es incroyable"`,
     gridSizeLabel:  (min) => `Taille de la Grille (min ${min})`,
     gridSizeNote:   'Taille automatique pour les mots. Max 30×30.',
     wordsLabel:     (n) => `Mots (${n}/12)`,
