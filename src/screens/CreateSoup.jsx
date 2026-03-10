@@ -255,7 +255,7 @@ export default function CreateSoup({ user, language = 'en' }) {
                 <input
                   ref={el => { inputRefs.current[idx] = el; }}
                   type="text"
-                  placeholder={`Word ${idx + 1}`}
+                  placeholder={t.wordPlaceholder(idx + 1)}
                   value={word}
                   onChange={e => handleWordChange(idx, e.target.value)}
                   onKeyDown={e => handleKeyDown(e, idx)}

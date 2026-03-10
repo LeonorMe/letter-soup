@@ -19,10 +19,6 @@ import { getT, LANGUAGES } from '../lib/i18n';
 
 const USER_STORAGE_KEY = 'letter_soup_user';
 
-/** Returns true if a soup was generated in vocabulary mode */
-const isVocabSoup = (soup) =>
-  soup?.title?.includes('Learn') && soup?.title?.includes('Vocabulary');
-
 export default function PlaySoup({ theme, onToggleTheme, language: appLanguage = 'en' }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -94,15 +90,14 @@ export default function PlaySoup({ theme, onToggleTheme, language: appLanguage =
     soupData.words.length > 0 &&
     foundWords.length === soupData.words.length;
 
-  // ── Save vocab puzzle win (per language) ─────────────────────────────────
+  // ── Save puzzle win – universal counter for ALL puzzle types ────────────
   useEffect(() => {
-    if (!isWin || hasSavedWin.current || !isVocabSoup(soupData)) return;
+    if (!isWin || hasSavedWin.current) return;
     hasSavedWin.current = true;
 
     const user = localStorage.getItem(USER_STORAGE_KEY);
     if (user) {
-      const lang = soupData.language || 'en';
-      const key  = `vocab_wins_${lang}_${user}`;
+      const key  = `puzzles_won_${user}`;
       const prev = parseInt(localStorage.getItem(key) || '0', 10);
       localStorage.setItem(key, (prev + 1).toString());
     }

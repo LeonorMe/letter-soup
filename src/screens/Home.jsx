@@ -25,7 +25,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
   // ── State ─────────────────────────────────────────────────────────────────
   const [savedSoups,      setSavedSoups]      = useState([]);
   const [wordsFound,      setWordsFound]       = useState(0);
-  const [vocabWins,       setVocabWins]        = useState(0);
+  const [puzzlesWon,      setPuzzlesWon]        = useState(0);
   const [copiedIndex,     setCopiedIndex]      = useState(null);
   const [showLangPicker,  setShowLangPicker]   = useState(false);
 
@@ -33,14 +33,12 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
   useEffect(() => {
     const soups  = JSON.parse(localStorage.getItem(`soups_${user}`) || '[]');
     const found  = parseInt(localStorage.getItem(`words_found_${user}`) || '0', 10);
-    // Sum vocab wins across all languages for the global counter
-    const wins = LANGUAGES.reduce((sum, lang) => {
-      return sum + parseInt(localStorage.getItem(`vocab_wins_${lang.code}_${user}`) || '0', 10);
-    }, 0);
+    // Universal win counter – any puzzle type, any language
+    const won    = parseInt(localStorage.getItem(`puzzles_won_${user}`) || '0', 10);
 
     setSavedSoups(soups);
     setWordsFound(found);
-    setVocabWins(wins);
+    setPuzzlesWon(won);
   }, [user, language]);
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -184,10 +182,10 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
 
         <div style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#eab308', fontWeight: 800, fontSize: '1.6rem' }}>
-            <Award size={20} /> {vocabWins}
+            <Award size={20} /> {puzzlesWon}
           </div>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-            {t.vocabWins}
+            {t.puzzlesWon}
           </p>
         </div>
       </div>
