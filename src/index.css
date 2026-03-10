@@ -1,52 +1,82 @@
+/*
+ * index.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Global design system for Letter Soup.
+ *
+ * Theming:
+ *   Light mode  → :root  (default, also applied when [data-theme="light"])
+ *   Dark mode   → [data-theme="dark"]   (set by App.jsx on <html>)
+ *   System pref → @media (prefers-color-scheme: dark)  used as an initial
+ *                 default only – the user's explicit toggle overrides this.
+ */
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
 
+/* ── Light theme (default) ─────────────────────────────────────────────────── */
 :root {
-  --bg-color: #f8fafc;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --card-bg: #ffffff;
-  --border-radius: 24px;
-  
-  --primary: #0e7490; /* Darker Cyan for accessibility contrast */
-  --primary-hover: #164e63;
-  --gray-selection: #cbd5e1;
+  --bg-color:              #f8fafc;
+  --text-main:             #0f172a;
+  --text-muted:            #64748b;
+  --card-bg:               #ffffff;
+  --border-radius:         24px;
+
+  --primary:               #0e7490; /* Dark cyan – WCAG AA compliant on white */
+  --primary-hover:         #164e63;
+  --gray-selection:        #cbd5e1;
   --gray-selection-border: #94a3b8;
-  
-  --max-app-width: 480px;
+
+  --max-app-width:         480px;
+
+  /* Smooth colour transitions when toggling theme */
+  --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
+/* ── Dark theme (explicit toggle) ──────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg-color:              #0f172a;
+  --text-main:             #f8fafc;
+  --text-muted:            #94a3b8;
+  --card-bg:               #1e293b;
+  --gray-selection:        #334155;
+  --gray-selection-border: #475569;
+}
+
+/* ── Respect system preference when no explicit toggle has been set ─────────── */
+/*    (App.jsx will sync the data-theme attribute on first load.)               */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #0f172a;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --card-bg: #1e293b;
-    --gray-selection: #334155;
+  :root:not([data-theme]) {
+    --bg-color:              #0f172a;
+    --text-main:             #f8fafc;
+    --text-muted:            #94a3b8;
+    --card-bg:               #1e293b;
+    --gray-selection:        #334155;
     --gray-selection-border: #475569;
   }
 }
 
+/* ── Reset & base ───────────────────────────────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Outfit', sans-serif;
-  user-select: none; /* Prevent text selection while playing */
+  user-select: none; /* Prevent accidental text selection during gameplay */
+}
+
+html {
+  transition: var(--transition-theme);
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
   min-height: 100vh;
-  margin: 0;
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: var(--transition-theme);
 }
 
-/* App Wrapper for Mobile-First View on Desktop */
+/* ── App wrapper (mobile-first, centred on desktop) ────────────────────────── */
 #root {
   max-width: var(--max-app-width);
   margin: 0 auto;
@@ -54,26 +84,26 @@ body {
   min-height: 100dvh;
   background-color: var(--bg-color);
   position: relative;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.12);
   overflow-x: hidden;
   padding: 1rem;
+  transition: var(--transition-theme);
 }
 
-@media (prefers-color-scheme: dark) {
-    #root {
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-    }
+[data-theme="dark"] #root {
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Utilities */
+/* ── Glass panel card ───────────────────────────────────────────────────────── */
 .glass-panel {
   background: var(--card-bg);
   border-radius: var(--border-radius);
   padding: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-  transition: transform 0.2s ease;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, var(--transition-theme);
 }
 
+/* ── Buttons ────────────────────────────────────────────────────────────────── */
 button {
   border: none;
   background: none;
@@ -116,6 +146,7 @@ button:active {
   opacity: 0.8;
 }
 
+/* ── Text input ─────────────────────────────────────────────────────────────── */
 input[type="text"] {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -125,7 +156,7 @@ input[type="text"] {
   color: var(--text-main);
   font-size: 1rem;
   font-family: 'Outfit', sans-serif;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, var(--transition-theme);
   outline: none;
 }
 
@@ -133,16 +164,17 @@ input[type="text"]:focus {
   border-color: var(--primary);
 }
 
-/* Grid Animations */
+/* ── Animations ─────────────────────────────────────────────────────────────── */
 @keyframes popIn {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0%   { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1);   opacity: 1; }
 }
 
 .animate-pop-in {
   animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
+/* ── Grid cell ──────────────────────────────────────────────────────────────── */
 .cell {
   position: relative;
   aspect-ratio: 1;
@@ -157,7 +189,7 @@ input[type="text"]:focus {
   color: var(--text-main);
 }
 
-/* Tooltips */
+/* ── Word definition tooltip ────────────────────────────────────────────────── */
 .tooltip-container {
   position: relative;
   display: inline-block;
@@ -168,7 +200,7 @@ input[type="text"]:focus {
   visibility: hidden;
   width: max-content;
   max-width: 200px;
-  background-color: var(--bg-color);
+  background-color: var(--card-bg);
   color: var(--text-main);
   text-align: center;
   border-radius: 12px;
@@ -191,5 +223,3 @@ input[type="text"]:focus {
   visibility: visible;
   opacity: 1;
 }
-
-/* Hides default Vite CSS */
