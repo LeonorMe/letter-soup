@@ -2,6 +2,8 @@
 
 A modern, mobile-first Progressive Web Application (PWA) for creating, playing, and sharing "Letter Soup" (Word Search) puzzles.
 
+Try it out: https://letter-soup-rho.vercel.app/#/login
+
 ## Features
 
 *   **Dynamic Grid Generation**: Automatically places up to 12 secret words horizontally, vertically, and diagonally in a grid (default 10x10).
