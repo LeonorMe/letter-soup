@@ -46,7 +46,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
   /** Start a new random vocabulary puzzle in the current language */
   const handlePlayRandom = () => {
     const words = generateVocabularyWords(language);
-    const { grid, words: placedWords, size } = generateSoup(words, 10);
+    const { grid, words: placedWords, size } = generateSoup(words, 8);
 
     const soupData = {
       title:    t.learnVocab,  // fully translated, e.g. "Aprender Vocabulario 🌍" in Spanish
@@ -65,9 +65,11 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
   };
 
   const handleShareSaved = async (soup, idx) => {
-    const encoded = encodeURIComponent(JSON.stringify(soup));
+    // New compact format: v2|title|creator|lang|size|word1,r,c,d,meaning1|...
+    // We'll implement a helper to build this to keep things clean
+    const compact = buildCompactSoup(soup);
     const base    = window.location.href.split('#')[0];
-    const link    = `${base}#/play?data=${encoded}`;
+    const link    = `${base}#/play?s=${encodeURIComponent(compact)}`;
 
     try {
       if (navigator.share) {
@@ -78,6 +80,37 @@ export default function Home({ user, onLogout, theme, onToggleTheme, language, o
         setTimeout(() => setCopiedIndex(null), 2000);
       }
     } catch (err) { console.error('Share failed', err); }
+  };
+
+  /** Helper to build compact soup string */
+  const buildCompactSoup = (soup) => {
+    const parts = [
+      'v2',
+      soup.title,
+      soup.creator,
+      soup.language,
+      soup.size
+    ];
+    
+    const wordParts = (soup.words || []).map(w => {
+      const firstCell = w.cells[0];
+      const secondCell = w.cells[1];
+      const dr = secondCell.r - firstCell.r;
+      const dc = secondCell.c - firstCell.c;
+      // Find direction index (0-7)
+      const DIRECTIONS = [[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+      const dIdx = DIRECTIONS.findIndex(d => d[0] === dr && d[1] === dc);
+      
+      return [
+        w.word,
+        firstCell.r,
+        firstCell.c,
+        dIdx,
+        w.meaning || ''
+      ].join(',');
+    });
+    
+    return [...parts, ...wordParts].join('|');
   };
 
   const handleDelete = (idx) => {

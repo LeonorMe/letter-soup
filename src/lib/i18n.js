@@ -58,7 +58,7 @@ const translations = {
     found:          (a, b) => `${a} / ${b} found`,
   },
   pt: {
-    welcome:        (name) => `Bem-vindo, ${name}!`,
+    welcome:        (name) => `Olá, ${name}!`,
     subtitle:       'O que temos a cozinhar? 🍲',
     createSoup:     'Criar Nova Sopa',
     learnVocab:     'Aprender Vocabulário 🌍',
@@ -91,7 +91,7 @@ const translations = {
     found:          (a, b) => `${a} / ${b} encontradas`,
   },
   es: {
-    welcome:        (name) => `¡Bienvenido, ${name}!`,
+    welcome:        (name) => `¡Hola, ${name}!`,
     subtitle:       '¿Qué cocinamos hoy? 🍲',
     createSoup:     'Crear Nueva Sopa',
     learnVocab:     'Aprender Vocabulario 🌍',
@@ -124,7 +124,7 @@ const translations = {
     found:          (a, b) => `${a} / ${b} encontradas`,
   },
   it: {
-    welcome:        (name) => `Benvenuto, ${name}!`,
+    welcome:        (name) => `Ciao, ${name}!`,
     subtitle:       'Cosa cuciniamo oggi? 🍲',
     createSoup:     'Crea Nuova Zuppa',
     learnVocab:     'Impara il Vocabolario 🌍',

@@ -39,8 +39,12 @@ export default function CreateSoup({ user, language = 'en' }) {
 
   // ── Derived values ────────────────────────────────────────────────────────
 
-  /** Words that are valid (length > 1, uppercase letters only) */
-  const cleanWords = words.filter(w => w.trim().length > 1);
+  /** Words that are valid (length > 1, uppercase letters only) and unique */
+  const cleanWords = Array.from(new Set(
+    words
+      .map(w => w.trim().toUpperCase().replace(/[^A-Z]/g, ''))
+      .filter(w => w.length > 1)
+  ));
 
   /** Minimum grid size required to fit all words */
   const longestLen       = cleanWords.length ? Math.max(...cleanWords.map(w => w.length)) : 0;
@@ -145,9 +149,39 @@ export default function CreateSoup({ user, language = 'en' }) {
 
   const getShareLink = () => {
     if (!previewSoup) return '';
-    const encoded = encodeURIComponent(JSON.stringify(previewSoup));
+    const compact = buildCompactSoup(previewSoup);
     const base    = window.location.href.split('#')[0];
-    return `${base}#/play?data=${encoded}`;
+    return `${base}#/play?s=${encodeURIComponent(compact)}`;
+  };
+
+  /** Helper to build compact soup string (reused from Home logic or similar) */
+  const buildCompactSoup = (soup) => {
+    const parts = [
+      'v2',
+      soup.title,
+      soup.creator,
+      soup.language,
+      soup.size
+    ];
+    
+    const wordParts = (soup.words || []).map(w => {
+      const firstCell = w.cells[0];
+      const secondCell = w.cells[1];
+      const dr = secondCell.r - firstCell.r;
+      const dc = secondCell.c - firstCell.c;
+      const DIRECTIONS = [[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+      const dIdx = DIRECTIONS.findIndex(d => d[0] === dr && d[1] === dc);
+      
+      return [
+        w.word,
+        firstCell.r,
+        firstCell.c,
+        dIdx,
+        w.meaning || ''
+      ].join(',');
+    });
+    
+    return [...parts, ...wordParts].join('|');
   };
 
   const handleShare = async () => {

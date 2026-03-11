@@ -87,7 +87,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/login"
-          element={user ? <Navigate to="/" /> : <Login onLogin={handleLogin} />}
+          element={user ? <Navigate to="/" /> : <Login onLogin={handleLogin} {...languageProps} />}
         />
         <Route path="/"
           element={user

@@ -16,6 +16,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Award, Sun, Moon } from 'lucide-react';
 import { getT, LANGUAGES } from '../lib/i18n';
+import { RAINBOW_COLORS } from '../lib/soupGenerator';
 
 const USER_STORAGE_KEY = 'letter_soup_user';
 
@@ -35,6 +36,61 @@ export default function PlaySoup({ theme, onToggleTheme, language: appLanguage =
   // ── Load soup from URL ────────────────────────────────────────────────────
   useEffect(() => {
     const raw = searchParams.get('data');
+    const short = searchParams.get('s');
+    
+    if (short) {
+      try {
+        const decoded = decodeURIComponent(short);
+        const [v, title, creator, lang, sizeStr, ...wordLines] = decoded.split('|');
+        const size = parseInt(sizeStr, 10);
+        
+        const words = wordLines.map((line, i) => {
+          const [word, r, c, dIdx, meaning] = line.split(',');
+          const r0 = parseInt(r, 10);
+          const c0 = parseInt(c, 10);
+          const dI = parseInt(dIdx, 10);
+          
+          const DIRECTIONS = [[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+          const dir = DIRECTIONS[dI];
+          
+          const cells = [];
+          for (let j = 0; j < word.length; j++) {
+            cells.push({ r: r0 + dir[0] * j, c: c0 + dir[1] * j });
+          }
+          
+          return {
+            word,
+            meaning: meaning || null,
+            color: RAINBOW_COLORS[i % RAINBOW_COLORS.length],
+            found: false,
+            cells
+          };
+        });
+        
+        // Reconstruct grid
+        const grid = Array.from({ length: size }, () => Array(size).fill(null));
+        words.forEach(w => {
+          w.cells.forEach((cell, j) => {
+            grid[cell.r][cell.c] = w.word[j];
+          });
+        });
+        
+        // Fill random
+        const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            if (grid[r][c] === null)
+              grid[r][c] = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+          }
+        }
+        
+        setSoupData({ title, creator, language: lang, size, words, grid });
+      } catch (err) {
+        console.error('PlaySoup: failed to parse short link', err);
+      }
+      return;
+    }
+
     if (!raw) return;
     try {
       const parsed = JSON.parse(decodeURIComponent(raw));
