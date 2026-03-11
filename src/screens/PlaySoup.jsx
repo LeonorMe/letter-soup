@@ -29,6 +29,7 @@ export default function PlaySoup({ theme, onToggleTheme, language: appLanguage =
   const [selection,   setSelection]   = useState([]);
   const [foundWords,  setFoundWords]  = useState([]);
   const [copied,      setCopied]      = useState(false);
+  const [isPainting,  setIsPainting]  = useState(false);
 
   // Guard against double-counting the win in StrictMode
   const hasSavedWin = useRef(false);
@@ -184,13 +185,46 @@ export default function PlaySoup({ theme, onToggleTheme, language: appLanguage =
   };
 
   // ── Cell interaction helpers ──────────────────────────────────────────────
-  const toggleCell = (r, c) => {
+  const toggleCell = (r, c, forceAdd = false) => {
     if (isWin) return;
     setSelection(prev => {
       const idx = prev.findIndex(item => item.r === r && item.c === c);
-      return idx >= 0 ? prev.filter((_, i) => i !== idx) : [...prev, { r, c }];
+      if (idx >= 0) {
+        if (forceAdd) return prev;
+        return prev.filter((_, i) => i !== idx);
+      }
+      return [...prev, { r, c }];
     });
   };
+
+  const handlePointerDown = (r, c) => {
+    setIsPainting(true);
+    toggleCell(r, c);
+  };
+
+  const handlePointerEnter = (r, c) => {
+    if (isPainting) toggleCell(r, c, true);
+  };
+
+  const stopPainting = () => setIsPainting(false);
+
+  // Touch move helper since pointerEnter doesn't always fire correctly on touch drag
+  const handleTouchMove = (e) => {
+    if (!isPainting || isWin) return;
+    const touch = e.touches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (el && el.hasAttribute('data-r')) {
+      const r = parseInt(el.getAttribute('data-r'), 10);
+      const c = parseInt(el.getAttribute('data-c'), 10);
+      toggleCell(r, c, true);
+    }
+  };
+
+  // Global listener to stop painting if user releases outside the grid
+  useEffect(() => {
+    window.addEventListener('pointerup', stopPainting);
+    return () => window.removeEventListener('pointerup', stopPainting);
+  }, []);
 
   const getCellBg = (r, c) => {
     for (const fw of foundWords)
@@ -270,27 +304,34 @@ export default function PlaySoup({ theme, onToggleTheme, language: appLanguage =
 
       {/* ── Word-search grid ── */}
       <div className="glass-panel" style={{ padding: '8px', display: 'flex', justifyContent: 'center' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${soupData.size}, 1fr)`,
-          gap: soupData.size > 20 ? '1px' : '2px',
-          backgroundColor: 'var(--gray-selection-border)',
-          padding: '4px', borderRadius: '12px',
-          width: '100%', aspectRatio: '1',
-          touchAction: 'none',
-        }}>
+        <div 
+          onPointerLeave={stopPainting}
+          onTouchMove={handleTouchMove}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${soupData.size}, 1fr)`,
+            gap: soupData.size > 20 ? '1px' : '2px',
+            backgroundColor: 'var(--gray-selection-border)',
+            padding: '4px', borderRadius: '12px',
+            width: '100%', aspectRatio: '1',
+            touchAction: 'none',
+          }}>
           {soupData.grid.map((row, rIdx) =>
             row.map((letter, cIdx) => (
               <div
                 key={`${rIdx}-${cIdx}`}
                 className="cell"
-                onClick={() => toggleCell(rIdx, cIdx)}
+                data-r={rIdx}
+                data-c={cIdx}
+                onPointerDown={() => handlePointerDown(rIdx, cIdx)}
+                onPointerEnter={() => handlePointerEnter(rIdx, cIdx)}
                 style={{
                   backgroundColor: getCellBg(rIdx, cIdx),
                   color: getCellColor(rIdx, cIdx),
                   borderRadius: '4px',
                   fontSize: soupData.size > 18 ? '0.7rem' : soupData.size > 14 ? '0.85rem' : '1.1rem',
                   transition: 'all 0.15s ease',
+                  userSelect: 'none',
                 }}
               >
                 {letter}
