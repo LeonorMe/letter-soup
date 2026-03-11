@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { LogIn, ChevronDown } from 'lucide-react';
-import { LANGUAGES } from '../lib/i18n';
+import { LANGUAGES, getT } from '../lib/i18n';
 
 export default function Login({ onLogin, language, onChangeLanguage }) {
   const [username, setUsername] = useState('');
   const [showLangPicker, setShowLangPicker] = useState(false);
   
   const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
+  const t           = getT(language);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +70,7 @@ export default function Login({ onLogin, language, onChangeLanguage }) {
           Letter Soup
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>
-          A fun way to send coded messages 🍲
+          {t.loginSubtitle}
         </p>
       </div>
 
@@ -78,12 +79,12 @@ export default function Login({ onLogin, language, onChangeLanguage }) {
           
           <div>
             <label htmlFor="username" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--text-main)' }}>
-              Choose a username
+              {t.usernameLabel}
             </label>
             <input
               id="username"
               type="text"
-              placeholder="e.g. SoupMaster99"
+              placeholder={t.usernamePlaceholder}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -92,7 +93,7 @@ export default function Login({ onLogin, language, onChangeLanguage }) {
 
           <button type="submit" className="btn-primary" style={{ marginTop: '0.5rem' }}>
             <LogIn size={20} />
-            Enter Kitchen
+            {t.loginButton}
           </button>
         </form>
       </div>
