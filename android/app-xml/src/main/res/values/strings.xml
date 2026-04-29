@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Letter Soup (XML)</string>
+    <string name="create_puzzle">Create Puzzle</string>
+    <string name="random_puzzle">Random Puzzle</string>
+    <string name="play">Play</string>
+    <string name="victory">Victory!</string>
+    <string name="congratulations">Congratulations! You found all words.</string>
+</resources>
