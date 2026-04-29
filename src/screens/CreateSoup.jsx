@@ -26,7 +26,8 @@ export default function CreateSoup({ user, language = 'en' }) {
   // ── Form state ────────────────────────────────────────────────────────────
   const [title,    setTitle]    = useState('');
   const [words,    setWords]    = useState(['', '', '']); // raw input strings
-  const [gridSize, setGridSize] = useState(10);
+  const [gridSize, setGridSize] = useState(6);
+  const [hasManualSize, setHasManualSize] = useState(false);
 
   // ── Preview state ─────────────────────────────────────────────────────────
   const [previewSoup,  setPreviewSoup]  = useState(null);
@@ -55,8 +56,15 @@ export default function CreateSoup({ user, language = 'en' }) {
 
   // Push grid size up if a new word made the minimum larger
   useEffect(() => {
-    if (gridSize < minRequiredSize) setGridSize(minRequiredSize);
-  }, [minRequiredSize, gridSize]);
+    if (!hasManualSize) {
+      // Rule: 1 + size of the biggest word, but at least default 6 and enough for all words
+      const autoSize = Math.max(6, longestLen + 1, areaEstimate);
+      setGridSize(autoSize);
+    } else {
+      // If user manual, just ensure it doesn't break the minimum fit
+      if (gridSize < minRequiredSize) setGridSize(minRequiredSize);
+    }
+  }, [minRequiredSize, gridSize, longestLen, areaEstimate, hasManualSize]);
 
   // ── Word list handlers ────────────────────────────────────────────────────
 
@@ -110,6 +118,7 @@ export default function CreateSoup({ user, language = 'en' }) {
   // ── Grid size controls ────────────────────────────────────────────────────
 
   const adjustGridSize = (delta) => {
+    setHasManualSize(true);
     setGridSize(prev => Math.max(minRequiredSize, Math.min(prev + delta, 30)));
   };
 

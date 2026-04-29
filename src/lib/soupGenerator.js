@@ -210,12 +210,12 @@ export function generateSoup(inputWords, manualSize = null) {
     .filter(w => w.word.length > 1)
     .slice(0, 12);
 
-  if (words.length === 0) return { grid: [], words: [], size: 10 };
+  if (words.length === 0) return { grid: [], words: [], size: 6 };
 
   // Grid must fit the longest word, and be at least 5
   const maxLen  = Math.max(...words.map(w => w.word.length));
   const minSize = Math.max(5, maxLen);
-  const size    = manualSize ? Math.max(manualSize, minSize) : Math.max(10, minSize);
+  const size    = manualSize ? Math.max(manualSize, minSize) : Math.max(6, minSize);
 
   // Initialise empty grid
   const grid = Array.from({ length: size }, () => Array(size).fill(null));
