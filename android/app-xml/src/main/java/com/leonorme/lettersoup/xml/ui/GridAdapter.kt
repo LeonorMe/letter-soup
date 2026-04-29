@@ -28,14 +28,16 @@ class GridAdapter(
         holder.binding.tvLetter.text = cell.letter.toString()
         
         val color = foundIndices[position]
+        val card = holder.binding.root
+        
         if (color != null) {
-            holder.binding.tvLetter.setBackgroundColor(Color.parseColor(color))
+            card.setCardBackgroundColor(Color.parseColor(color))
             holder.binding.tvLetter.setTextColor(Color.WHITE)
         } else if (selectedIndices.contains(position)) {
-            holder.binding.tvLetter.setBackgroundColor(Color.LTGRAY)
+            card.setCardBackgroundColor(Color.parseColor("#E0E0E0"))
             holder.binding.tvLetter.setTextColor(Color.BLACK)
         } else {
-            holder.binding.tvLetter.setBackgroundColor(Color.parseColor("#F0F0F0"))
+            card.setCardBackgroundColor(Color.parseColor("#F8F9FA"))
             holder.binding.tvLetter.setTextColor(Color.BLACK)
         }
 
