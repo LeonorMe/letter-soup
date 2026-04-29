@@ -1,7 +1,10 @@
-rootProject.name = "LetterSoup"
-include(":core")
-include(":app-xml")
-include(":app-compose")
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -10,3 +13,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+rootProject.name = "LetterSoup"
+include(":core")
+include(":app-xml")
+include(":app-compose")
