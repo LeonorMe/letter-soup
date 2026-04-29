@@ -1,37 +1,28 @@
-# Letter Soup App 🍲
+# Letter Soup 🍲
 
-A modern, mobile-first Progressive Web Application (PWA) for creating, playing, and sharing "Letter Soup" (Word Search) puzzles.
+Multi-platform word search puzzle game.
 
-Try it out: https://letter-soup-rho.vercel.app/#/login
+## Project Structure
 
-## Features
-
-*   **Dynamic Grid Generation**: Automatically places up to 12 secret words horizontally, vertically, and diagonally in a grid (default 10x10).
-*   **Shareable Links**: Encodes your custom soup directly into the URL, allowing friends to play your level instantly in their browser without any database requirements!
-*   **Interactive Play**: Tap letters to select them. Selected letters turn gray, and correctly found words burst into rainbow colors.
-*   **English Vocabulary Practice**: Instantly generate random word searches to practice English vocabulary.
-*   **Modern Aesthetics**: Built with a clean, glassmorphism-inspired UI and responsive mobile-first design using React.
+- `web/`: React PWA implementation (Vite + Vanilla CSS).
+- `android/`: Native Android implementation (Kotlin Multi-module).
+    - `:core`: Shared gameplay logic and engine.
+    - `:app-xml`: Classic Android Views UI.
+    - `:app-compose`: Modern Jetpack Compose UI.
 
 ## Getting Started
 
-First, ensure you have Node.js installed.
+### Web
+1. Navigate to `web/`
+2. Run `npm install`
+3. Run `npm run dev`
 
-1.  Clone the repository and install dependencies:
-    ```bash
-    npm install
-    ```
-2.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-3.  Open the local network link provided in the terminal (usually `http://localhost:5173`) in your browser.
+### Android
+1. Open the `android/` directory in Android Studio.
+2. The IDE will automatically sync Gradle and download dependencies.
+3. Choose either the `app-xml` or `app-compose` run configuration to deploy to an emulator or device.
 
-## Tech Stack
-
-*   React
-*   Vite
-*   React Router
-*   Lucide Reat (Icons)
-*   Vanilla CSS
-
-Built as a mobile-first PWA, easily portable to Android via capacitor.
+## Core Features (Android)
+- **Shared Engine**: Both Android apps use the same `:core` logic for grid generation and word validation.
+- **Compose Exclusives**: The Compose version includes smooth animations and a more responsive grid.
+- **XML Stability**: The XML version provides a rock-solid classic implementation using RecyclerView.
