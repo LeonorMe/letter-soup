@@ -22,7 +22,7 @@ class GameEngine {
         "#6A4C93", "#9B5DE5", "#F15BB5", "#FF85A1"
     )
 
-    fun generatePuzzle(inputWords: List<String>, manualSize: Int? = null): Puzzle {
+    fun generateSoup(inputWords: List<String>, manualSize: Int? = null): Puzzle {
         val cleanWords = inputWords
             .map { it.uppercase().replace(Regex("[^A-Z]"), "") }
             .filter { it.length > 1 }
@@ -77,8 +77,8 @@ class GameEngine {
             }
         }
 
-        val finalGrid = grid.mapIndexed { r, row ->
-            row.mapIndexed { c, char ->
+        val finalGrid = grid.mapIndexed { _, row ->
+            row.mapIndexed { _, char ->
                 char ?: alphabet[random.nextInt(alphabet.length)]
             }
         }

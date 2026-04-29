@@ -15,10 +15,25 @@ class GameViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow<GameState?>(null)
     val uiState: StateFlow<GameState?> = _uiState.asStateFlow()
+    
+    private val _previewState = MutableStateFlow<Puzzle?>(null)
+    val previewState: StateFlow<Puzzle?> = _previewState.asStateFlow()
 
     fun startRandomGame() {
         val puzzle = repository.loadRandomVocabularyPuzzle()
         _uiState.value = GameState(puzzle)
+    }
+    
+    fun startCustomGame(puzzle: Puzzle) {
+        _uiState.value = GameState(puzzle)
+    }
+
+    fun generatePreview(title: String, words: List<String>, size: Int) {
+        val cleanWords = words.filter { it.length > 1 }
+        if (cleanWords.isEmpty()) return
+        
+        val puzzle = engine.generateSoup(cleanWords, size)
+        _previewState.value = puzzle.copy(title = title.ifBlank { "Secret Message" })
     }
 
     fun onCellClick(cell: Cell) {

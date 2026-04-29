@@ -11,12 +11,12 @@ class PuzzleRepository(private val engine: GameEngine) {
     )
 
     fun createPuzzle(words: List<String>, size: Int? = null): Puzzle {
-        return engine.generatePuzzle(words, size)
+        return engine.generateSoup(words, size)
     }
 
     fun loadRandomVocabularyPuzzle(language: String = "en"): Puzzle {
         val words = vocabularies[language] ?: vocabularies["en"]!!
         val selected = words.shuffled().take(6)
-        return engine.generatePuzzle(selected)
+        return engine.generateSoup(selected)
     }
 }
