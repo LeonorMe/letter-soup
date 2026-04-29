@@ -14,18 +14,19 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -64,9 +65,8 @@ fun AppNavigation() {
         composable("create") {
             CreateSoupScreen(onBack = { navController.popBackStack() })
         }
-        composable("game/{mode}") { backStackEntry ->
-            val mode = backStackEntry.arguments?.getString("mode") ?: "random"
-            GameScreen(mode = mode, onBack = { navController.popBackStack() })
+        composable("game/{mode}") {
+            GameScreen(onBack = { navController.popBackStack() })
         }
     }
 }
@@ -93,7 +93,6 @@ fun GlassPanel(
 @Composable
 fun HomeScreen(onPlayRandom: () -> Unit, onCreateCustom: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Abstract Background Gradients
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 brush = Brush.radialGradient(listOf(Color(0xFFE0C3FC), Color.Transparent)),
@@ -148,7 +147,7 @@ fun HomeScreen(onPlayRandom: () -> Unit, onCreateCustom: () -> Unit) {
                     shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(2.dp, Color(0xFF6200EE))
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, color = Color(0xFF6200EE))
+                    Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF6200EE))
                     Spacer(Modifier.width(8.dp))
                     Text("Create Custom Soup", color = Color(0xFF6200EE), fontWeight = FontWeight.Bold)
                 }
@@ -162,7 +161,7 @@ fun HomeScreen(onPlayRandom: () -> Unit, onCreateCustom: () -> Unit) {
 fun CreateSoupScreen(onBack: () -> Unit) {
     var title by remember { mutableStateOf("") }
     var words by remember { mutableStateOf(listOf("", "", "")) }
-    var gridSize by remember { mutableStateOf(6) }
+    var gridSize by remember { mutableIntStateOf(6) }
 
     Scaffold(
         topBar = {
@@ -170,7 +169,7 @@ fun CreateSoupScreen(onBack: () -> Unit) {
                 title = { Text("Create Soup", fontWeight = FontWeight.ExtraBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 }
             )
@@ -209,7 +208,7 @@ fun CreateSoupScreen(onBack: () -> Unit) {
                         onClick = { if (gridSize > 5) gridSize-- },
                         modifier = Modifier.background(Color(0xFFF0F0F0), RoundedCornerShape(12.dp))
                     ) {
-                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
                     }
                     
                     Text("$gridSize", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
@@ -218,7 +217,7 @@ fun CreateSoupScreen(onBack: () -> Unit) {
                         onClick = { if (gridSize < 20) gridSize++ },
                         modifier = Modifier.background(Color(0xFFF0F0F0), RoundedCornerShape(12.dp))
                     ) {
-                        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
                     }
                 }
             }
@@ -262,7 +261,7 @@ fun CreateSoupScreen(onBack: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameScreen(mode: String, onBack: () -> Unit, viewModel: GameViewModel = viewModel()) {
+fun GameScreen(onBack: () -> Unit, viewModel: GameViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -275,7 +274,7 @@ fun GameScreen(mode: String, onBack: () -> Unit, viewModel: GameViewModel = view
                 title = { Text("Soup Time!", fontWeight = FontWeight.ExtraBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 }
             )
@@ -363,14 +362,19 @@ fun PuzzleGrid(state: GameState, onCellClick: (Cell) -> Unit) {
                     isSelected -> Color(0xFF6200EE).copy(alpha = 0.3f)
                     else -> Color(0xFFF8F9FA)
                 },
-                animationSpec = tween(300)
+                animationSpec = tween(300),
+                label = "cellBg"
             )
 
-            val scale by animateFloatAsState(if (isSelected) 0.95f else 1f)
+            val scale by animateFloatAsState(
+                targetValue = if (isSelected) 0.95f else 1f,
+                label = "cellScale"
+            )
 
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
+                    .scale(scale)
                     .clip(RoundedCornerShape(8.dp))
                     .background(backgroundColor)
                     .clickable { onCellClick(cell) }
