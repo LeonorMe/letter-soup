@@ -39,9 +39,28 @@ import com.leonorme.lettersoup.compose.util.PreferenceManager
 import com.leonorme.lettersoup.compose.viewmodel.GameViewModel
 import com.leonorme.lettersoup.core.model.*
 
+import android.widget.Toast
+import com.leonorme.lettersoup.core.repository.PuzzleRepository
+import com.leonorme.lettersoup.core.engine.GameEngine
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val repository = PuzzleRepository(GameEngine())
+        var initialPuzzle: Puzzle? = null
+
+        val data = intent?.data
+        if (data != null && data.pathSegments.size >= 2 && data.pathSegments[0] == "share") {
+            val encoded = data.pathSegments[1]
+            val words = repository.decodePuzzle(encoded)
+            if (words != null && words.isNotEmpty()) {
+                initialPuzzle = repository.createPuzzle(words)
+            } else {
+                Toast.makeText(this, "Invalid Shared Link", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         setContent {
             val context = LocalContext.current
             val prefs = remember { PreferenceManager(context) }
@@ -74,7 +93,8 @@ class MainActivity : ComponentActivity() {
                                 prefs.logout()
                                 username = null
                             },
-                            prefs = prefs
+                            prefs = prefs,
+                            initialPuzzle = initialPuzzle
                         )
                     }
                 }
@@ -125,12 +145,19 @@ fun AppNavigation(
     onLanguageChange: (String) -> Unit,
     onThemeToggle: () -> Unit,
     onLogout: () -> Unit,
-    prefs: PreferenceManager
+    prefs: PreferenceManager,
+    initialPuzzle: Puzzle? = null
 ) {
     val navController = rememberNavController()
     val gameViewModel: GameViewModel = viewModel()
 
-    NavHost(navController = navController, startDestination = "home") {
+    LaunchedEffect(initialPuzzle) {
+        if (initialPuzzle != null) {
+            gameViewModel.startCustomGame(initialPuzzle)
+        }
+    }
+
+    NavHost(navController = navController, startDestination = if (initialPuzzle != null) "game" else "home") {
         composable("home") { 
             HomeScreen(
                 username = username,
@@ -167,7 +194,13 @@ fun AppNavigation(
             GameScreen(
                 viewModel = gameViewModel,
                 language = language,
-                onBack = { navController.popBackStack() },
+                onBack = { 
+                    if (navController.previousBackStackEntry == null) {
+                        navController.navigate("home") { popUpTo(0) }
+                    } else {
+                        navController.popBackStack()
+                    }
+                },
                 onWin = {
                     prefs.puzzlesWon += 1
                 }

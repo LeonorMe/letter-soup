@@ -1,5 +1,6 @@
 package com.leonorme.lettersoup.xml.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,10 +27,17 @@ class GameActivity : AppCompatActivity() {
         repository = PuzzleRepository(engine)
 
         val mode = intent.getStringExtra("MODE") ?: "RANDOM"
-        puzzle = if (mode == "RANDOM") {
-            repository.loadRandomVocabularyPuzzle()
-        } else {
-            repository.createPuzzle(listOf("ANDROID", "KOTLIN", "XML", "COMPOSE"))
+        puzzle = when (mode) {
+            "RANDOM" -> repository.loadRandomVocabularyPuzzle()
+            "CUSTOM", "SHARED" -> {
+                val words = intent.getStringArrayListExtra("WORDS") ?: arrayListOf()
+                if (words.isNotEmpty()) {
+                    repository.createPuzzle(words)
+                } else {
+                    repository.loadRandomVocabularyPuzzle()
+                }
+            }
+            else -> repository.loadRandomVocabularyPuzzle()
         }
 
         setupGrid()
@@ -72,7 +80,8 @@ class GameActivity : AppCompatActivity() {
 
     private fun checkWin() {
         if (puzzle.words.all { it.found }) {
-            Toast.makeText(this, "CONGRATULATIONS!", Toast.LENGTH_LONG).show()
+            startActivity(Intent(this, ResultActivity::class.java))
+            finish()
         }
     }
 }

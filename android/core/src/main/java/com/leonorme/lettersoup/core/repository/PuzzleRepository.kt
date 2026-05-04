@@ -2,6 +2,7 @@ package com.leonorme.lettersoup.core.repository
 
 import com.leonorme.lettersoup.core.engine.GameEngine
 import com.leonorme.lettersoup.core.model.Puzzle
+import com.leonorme.lettersoup.core.util.ShareEncoder
 
 class PuzzleRepository(private val engine: GameEngine) {
     
@@ -18,5 +19,13 @@ class PuzzleRepository(private val engine: GameEngine) {
         val words = vocabularies[language] ?: vocabularies["en"]!!
         val selected = words.shuffled().take(6)
         return engine.generateSoup(selected)
+    }
+
+    fun encodePuzzleToShareLink(words: List<String>): String {
+        return ShareEncoder.encodeWords(words)
+    }
+
+    fun decodePuzzle(link: String): List<String>? {
+        return ShareEncoder.decodeWords(link)
     }
 }

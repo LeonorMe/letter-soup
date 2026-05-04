@@ -69,6 +69,23 @@
             android:textStyle="bold"
             app:cornerRadius="16dp" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShared"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Shared Puzzle"
+            app:strokeColor="#03DAC5"
+            app:strokeWidth="2dp"
+            android:textColor="#03DAC5"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            app:cornerRadius="16dp" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
